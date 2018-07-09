@@ -8,7 +8,7 @@ square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','45
 diagonal_units = [["{}{}".format(a, b) for a, b in zip(rows,cols)]] + [["{}{}".format(a, b) for a, b in zip(rows,cols[::-1])]]
 unitlist = row_units + column_units + square_units 
 # TODO: Update the unit list to add the new diagonal units
-unitlist = unitlist +diagonal_units
+unitlist = unitlist + diagonal_units
 
 
 
@@ -44,17 +44,20 @@ def naked_twins(values):
     and because it is simpler (since the reduce_puzzle function already calls this
     strategy repeatedly).
     """
-
     # TODO: Implement this function!
-    for unit in unitlist: 
-        board_values = [ values[v] for v in unit ]
-        for box in unit:
-            if((board_values.count(values[box]) == len(values[box])) and (board_values.count(values[box]) >1)):
-                 for val in values[box]:
-                    for peer in unit: 
-                        if(values[peer] != values[box]):
-                            if(val in values[peer]):
-                                values[peer] = values[peer].replace(val,'')
+    for unit in unitlist:
+        digits= '12345689'
+        for digit1 in digits:
+            pos = digits.find(digit1)
+            remaining = digits[pos:]
+            for digit2 in remaining:
+                value = digit1+digit2
+                dplaces = [box for box in unit if value == values[box]]
+                if len(dplaces) == 2:
+                    for box in unit:
+                        if((values[box] != value) and ((value[0] in values[box]) or(value[1] in values[box]))):
+                            values[box] = values[box].replace(value[0],'')
+                            values[box] = values[box].replace(value[1],'')
     return values
 
 def eliminate(values):
